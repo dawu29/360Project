@@ -21,11 +21,13 @@ mars <- function(formula, data, control=NULL, ...) {
   y <- model.response(mf)
   mt <- attr(mf, "terms")
   x <- model.matrix(mt, mf)
+  x <- x[,-1]
+
   fwd <- fwd_stepwise(y, x, control)
   bwd <- bwd_stepwise(fwd, control)
 
   dat <- data.frame(y=bwd$y,bwd$B)
-  model = lm(y~-1, dat)
+  model = lm(formula, dat)
 
   output <- list()
   output$call <- match.call()
@@ -33,7 +35,7 @@ mars <- function(formula, data, control=NULL, ...) {
   output$y <- bwd$y
   output$B <- bwd$B
   output$Bfuncs <- bwd$Bfuncs
-  output$x_names <- colnames(x)[-1]
+  output$x_names <- colnames(x)
   output$model = model
 
   class(output) = "mars"
@@ -61,45 +63,41 @@ fwd_stepwise <- function(y,x,control){
   n <- ncol(x) # number of predictors
   B <- init_B(N,control$Mmax) # Exercise: write init_B()
   Bfuncs <- vector(mode = "list", length = control$Mmax+1)
-  # splits <- data.frame(m=rep(NA,Mmax),v=rep(NA,Mmax),t=rep(NA,Mmax))
   #---------------------------------------------------
   # Looping for forward selection:
-  for(i in 1:(control$Mmax/2)) { # contrast to indexing 2...Mmax in Friedman
+  for(i in 1:(control$Mmax/2)) {
     M <- 2*i-1
     lof_best <- Inf
     for(m in 1:M) { # choose a basis function to split
-      vv <- setdiff(1:n, Bfuncs[[m]][,"v"])#  variables v not already in Bfuncs[[m]]/What is in Bfuncs[[m]][,"v"]
+      vv <- setdiff(1:n, Bfuncs[[m]][,2])#  variables v not already in Bfuncs[[m]], column 2 is v for the variable
       for(v in vv){ # select a variable to split on
-        tt <- split_points(x[,v],B[,m]) # Ex ercise: write split_points()
+        tt <- split_points(x[,v],B[,m]) # split points
         for(t in tt) {
-          Bnew <- data.frame(B[,(1:M)[-m]],
-                             Btem1=B[,m]*h(1, x[,v], t),Btem2=B[,m]*h(-1, x[,v], t))
-          # Btem1=B[,m]*H(+(x[,v]-t)),Btem2=B[,m]*H(-(x[,v]-t)))
+          Bnew <- data.frame(B[,(1:M)],
+                             Btem1=B[,m]*h(+1, x[,v], t),
+                             Btem2=B[,m]*h(-1, x[,v], t))
           gdat <- data.frame(y=y,Bnew)
-          lof <- LOF(y~.,gdat,control) #  Use your LOF() from week 4
+          lof <- LOF(y~.,gdat,control) # updated LOF
           if(lof < lof_best) {
             lof_best <- lof
-            tempB <- c(m,v,t)
-            #splits[M,] <- c(m,v,t)
+            split_best <- c(m=m,v=v,t=t)
           } # end if
         } # end loop over splits
       } # end loop over variables
     } # end loop over basis functions to split
-    m <- tempB[1]; v <- tempB[2]; t <- tempB[3]
+    m <- split_best["m"]; v <- split_best["v"]; t <- split_best["t"]
 
     B[,M+1] <- B[,m]*h(-1, x[,v], t)
-    B[,M+2] <- B[,m]*h(1, x[,v], t)
-    #B[,M+1] <- B[,m]*H(-(x[,v]-t))
-    #B[,M+2] <- B[,m]*H(+(x[,v]-t))
-    #B[,m] <- B[,m]*H(+(x[,v]-t))
+    B[,M+2] <- B[,m]*h(+1, x[,v], t)
 
-    Bfuncs[[M+1]] <- rbind(Bfuncs[[m]], c(s=-1, v=v, t=t))
-    Bfuncs[[M+2]] <- rbind(Bfuncs[[m]], c(s=1, v=v, t=t))
-    #Bfuncs[[m]] = rbind(Bfuncs[[m]], c(s=1, v, t))
+    Bfuncs[[M+1]] <- rbind(Bfuncs[[m]], c(s=-1, v, t))
+    Bfuncs[[M+2]] <- rbind(Bfuncs[[m]], c(s=+1, v, t))
   } # end loop over M
   colnames(B) <- paste0("B",(0:(ncol(B)-1)))
   return(list(y=y,B=B,Bfuncs=Bfuncs))
 }
+
+
 
 # take output of fwd_stepwise()
 #' Title
@@ -123,7 +121,7 @@ bwd_stepwise <- function(fwd, control) {
     for(m in L){
       K <- setdiff(L, m)
       dat2 <- data.frame(y=fwd$y,fwd$B[,K])
-      lof <- LOF(y~.-1, dat2, control)
+      lof <- LOF(y~., dat2, control)
       if(lof < b){
         b <- lof
         Kstar <- K
@@ -163,6 +161,7 @@ init_B <- function(N,Mmax) {
   names(B) <- c("B0",paste0("B",1:Mmax))
   return(B)
 }
+
 split_points <- function(xv,Bm) {
   out <- sort(unique(xv[Bm>0]))
   return(out[-length(out)])
