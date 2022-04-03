@@ -26,8 +26,7 @@ mars <- function(formula, data, control=NULL, ...) {
   fwd <- fwd_stepwise(y, x, control)
   bwd <- bwd_stepwise(fwd, control)
 
-  dat <- data.frame(y=bwd$y,bwd$B)
-  model = lm(formula, dat)
+  model = lm(formula = y ~.-1, data = data.frame(y = y, bwd$B))
 
   output <- list()
   output$call <- match.call()
@@ -36,9 +35,9 @@ mars <- function(formula, data, control=NULL, ...) {
   output$B <- bwd$B
   output$Bfuncs <- bwd$Bfuncs
   output$x_names <- colnames(x)
-  output$model = model
+  output = append(output, model)
 
-  class(output) = "mars"
+  class(output) = c("mars", mode(model))
   return (output)
 }
 
@@ -190,3 +189,34 @@ mars.control <- function(Mmax=2, d=3, trace=FALSE) {
   x <- validate_mars.control(x)
   new_mars.control(x)
 }
+
+predict.mars <- function(object,newdata) {
+  if(missing(newdata) || is.null(newdata)) {
+    B <- as.matrix(object$B)
+  }
+  else {
+    tt <- terms(object$formula,data=newdata)
+    tt <- delete.response(tt)
+    mf <- model.frame(tt,newdata)
+    mt <- attr(mf, "terms")
+    X <- model.matrix(mt, mf)[,-1] # remove intercept
+    B <- make_B(X,object$Bfuncs)
+  }
+  beta <- object$coefficients
+  drop(B %*% beta)
+}
+
+
+make_B <- function(X, Bfuncs){
+  B <- data.frame(matrix(1,nrow=nrow(X),ncol=length(Bfuncs)))
+  for (i in 2:(length(Bfuncs))){
+    for (j in 1:nrow(Bfuncs[[i]])) {
+      # B = h(s=, x[,v], t)*h(s=, x[,v], t)*h(s=, x[,v], t)..refer to lab 5 formula
+      B[,i] <-  B[,i] * h(s=Bfuncs[[i]][j,][1], x=X[, Bfuncs[[i]][j,][2]] , t=Bfuncs[[i]][j,][3])
+    }
+  }
+  B <- as.matrix(B)
+  return (B)
+}
+
+
