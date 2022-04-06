@@ -1,13 +1,12 @@
 Package: mars
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Version: 0.0.0.9123
+Title: What the Package Does (One Line, Title Case) ded
+Authors: 
+    Hello am ded, role: de role
+    no
+References: hello im a nice guy
+Example: try this please::
+Description: its mars yeyeyeye.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

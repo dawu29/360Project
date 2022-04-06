@@ -1,9 +1,3 @@
-# Lab 1, week 2
-#Shell implementation of MARS algorithm
-#student: Dawu Liu
-#SFU ID: 301116278
-
-
 #' Title
 #'
 #' @param formula a R formula
@@ -37,7 +31,7 @@ mars <- function(formula, data, control=NULL, ...) {
   output$x_names <- colnames(x)
   output = append(output, model)
 
-  class(output) = c("mars", mode(model))
+  class(output) = c("mars", class(model))
   return (output)
 }
 
@@ -96,8 +90,6 @@ fwd_stepwise <- function(y,x,control){
   return(list(y=y,B=B,Bfuncs=Bfuncs))
 }
 
-
-
 # take output of fwd_stepwise()
 #' Title
 #'
@@ -133,10 +125,6 @@ bwd_stepwise <- function(fwd, control) {
   }
   Jstar <- c(1, Jstar)
   return(list(y=fwd$y,B=fwd$B[,Jstar],Bfuncs=fwd$Bfuncs[Jstar]))
-}
-
-H <- function(x) {
-  return(as.numeric(x>=0))
 }
 
 # pmax Returns the  parallel maxima of two vectors
@@ -190,33 +178,17 @@ mars.control <- function(Mmax=2, d=3, trace=FALSE) {
   new_mars.control(x)
 }
 
-predict.mars <- function(object,newdata) {
-  if(missing(newdata) || is.null(newdata)) {
-    B <- as.matrix(object$B)
-  }
-  else {
-    tt <- terms(object$formula,data=newdata)
-    tt <- delete.response(tt)
-    mf <- model.frame(tt,newdata)
-    mt <- attr(mf, "terms")
-    X <- model.matrix(mt, mf)[,-1] # remove intercept
-    B <- make_B(X,object$Bfuncs)
-  }
-  beta <- object$coefficients
-  drop(B %*% beta)
-}
 
-
-make_B <- function(X, Bfuncs){
-  B <- data.frame(matrix(1,nrow=nrow(X),ncol=length(Bfuncs)))
-  for (i in 2:(length(Bfuncs))){
-    for (j in 1:nrow(Bfuncs[[i]])) {
-      # B = h(s=, x[,v], t)*h(s=, x[,v], t)*h(s=, x[,v], t)..refer to lab 5 formula
-      B[,i] <-  B[,i] * h(s=Bfuncs[[i]][j,][1], x=X[, Bfuncs[[i]][j,][2]] , t=Bfuncs[[i]][j,][3])
-    }
-  }
-  B <- as.matrix(B)
-  return (B)
-}
-
-
+#plot <- function(x,...) UseMethod("plot")
+# plot.mars <- function(control){
+#   plot(control$model)
+# }
+#
+# print <- function(x,...) UseMethod("print")
+# print.mars <- function(mars){
+#   cat("Call: \n")
+#   print(mars$call)
+#   cat("\nCoefficients:\n")
+#   print(mars$coefficients)
+#   cat("HI")
+# }
