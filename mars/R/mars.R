@@ -1,50 +1,40 @@
 #' Title
 #'
-#' @param formula a R formula
-#' @param data a data
-#' @param control a mars.control object
+#' @param formula
+#' @param data
+#' @param control
+#' @param ...
 #'
 #' @return
 #' @export
 #'
+#' @seealso
+#'
 #' @examples
-#' @import stats
+#'
+#' @imports stats
+#'
 mars <- function(formula, data, control=NULL, ...) {
   cc <- match.call()
   mf <- model.frame(formula, data)
   y <- model.response(mf)
   mt <- attr(mf, "terms")
-  x <- model.matrix(mt, mf)
-  x <- x[,-1]
+  x <- model.matrix(mt, mf)[,-1,drop=FALSE]
+  if(is.null(control)) control <- mars.control()
+  control <- validate_mars.control(control)
 
   fwd <- fwd_stepwise(y, x, control)
   bwd <- bwd_stepwise(fwd, control)
 
   model = lm(formula = y ~.-1, data = data.frame(y = y, bwd$B))
 
-  output <- list()
-  output$call <- match.call()
-  output$formula <- formula
-  output$y <- bwd$y
-  output$B <- bwd$B
-  output$Bfuncs <- bwd$Bfuncs
-  output$x_names <- colnames(x)
-  output = append(output, model)
+  output <-c(list(call=cc, formula=formula, y=y, B=bwd$B, Bfuncs=bwd$Bfuncs,
+                 x_names=colnames(x)), model)
 
   class(output) = c("mars", class(model))
   return (output)
 }
 
-#' Title
-#'
-#' @param y parameter
-#' @param x parameter
-#' @param control parameter
-#'
-#' @return
-#' @export
-#'
-#' @examples
 fwd_stepwise <- function(y,x,control){
   if(control$Mmax<2) {
     warning("Mmax is not greater than or equal to 2")
@@ -90,18 +80,16 @@ fwd_stepwise <- function(y,x,control){
   return(list(y=y,B=B,Bfuncs=Bfuncs))
 }
 
-# take output of fwd_stepwise()
-#' Title
-#'
-#' @param fwd parameter
-#' @param control parameter
-#'
-#' @return
-#' @export
-#'
-#' @examples
+init_B <- function(N,Mmax) {
+  B <- data.frame(matrix(NA,nrow=N,ncol=(Mmax+1)))
+  B[,1] <- 1
+  names(B) <- c("B0",paste0("B",1:Mmax))
+  return(B)
+}
+
 bwd_stepwise <- function(fwd, control) {
-  Mmax <- control$Mmax
+  #Mmax <- control$Mmax
+  Mmax <- ncol(fwd$B)-1
   Jstar <- 2:(Mmax+1)
   dat1 <- data.frame(y=fwd$y,fwd$B)
   lofstar <- LOF(y~.-1, dat1, control)
@@ -135,18 +123,11 @@ h <- function(s,x,t){
 LOF <- function(formula, data, control){
   N <- nrow(data)
   ff <- lm(formula, data)
-  M <- ncol(data)-2 # number of non-constant basis functions
-  Ctilde <- sum(hatvalues(ff)) + (control$d*M) # ˜C(M) = C(M)+dM
+  M <- length(coef(ff))-1 # number of non-constant basis functions
+  Ctilde <- sum(diag(hatvalues(ff))) + (control$d*M) # ˜C(M) = C(M)+dM
   RSS <- sum(residuals(ff)^2) # residual sum of squares
   GCV <- RSS * N/(N-Ctilde)^2
   return(GCV)
-}
-
-init_B <- function(N,Mmax) {
-  B <- data.frame(matrix(NA,nrow=N,ncol=(Mmax+1)))
-  B[,1] <- 1
-  names(B) <- c("B0",paste0("B",1:Mmax))
-  return(B)
 }
 
 split_points <- function(xv,Bm) {
@@ -154,41 +135,45 @@ split_points <- function(xv,Bm) {
   return(out[-length(out)])
 }
 
-# constructor
-new_mars.control <- function(x = list()) {
-  structure(x, class = "mars.control")
+# constructor, validator, and helper
+
+new_mars.control <- function(control) {
+  structure(control, class = "mars.control")
 }
 
 # validator
-validate_mars.control <- function (x) {
-  if(is.integer(x$Mmax) ==FALSE) warning("Mmax not integer")
-  if(x$Mmax%%2 != 0) warning("Mmax not even")
-  if(x$Mmax < 2) warning("Mmax is less than 2")
-  if(is.numeric(x$d) == FALSE) warning("d is not numeric")
-  if(is.logical(x$trace) == FALSE) warning("trace is not logical")
-  return (out=list(Mmax=x$Mmax, d=x$d, trace=x$trace))
+validate_mars.control <- function (control) {
+  stopifnot(is.integer(control$Mmax), is.numeric(control$d), is.logical(control$trace))
+
+  if(control$Mmax < 2) {
+    warning("Mmax is less than 2, changing it to 2")
+    control$Mmax <- 2
+  }
+
+  if(control$Mmax%%2 != 0) {
+    warning("Mmax not even, making it even")
+    control$Mmax <- 2*ceiling(control$Mmax/2) # make Mmax even
+  }
+
+  return (control)
 }
 
-# helper
+
+#' Title
+#'
+#' @param Mmax
+#' @param d
+#' @param trace
+#'
+#' @return
+#' @export
+#'
+#' @examples
 mars.control <- function(Mmax=2, d=3, trace=FALSE) {
   Mmax = as.integer(Mmax)
   x <- list(Mmax=Mmax, d=d, trace=trace)
-  if (Mmax <2 ) {Mmax = 2}
+  if (Mmax < 2) {Mmax = 2}
   x <- validate_mars.control(x)
   new_mars.control(x)
 }
 
-
-#plot <- function(x,...) UseMethod("plot")
-# plot.mars <- function(control){
-#   plot(control$model)
-# }
-#
-# print <- function(x,...) UseMethod("print")
-# print.mars <- function(mars){
-#   cat("Call: \n")
-#   print(mars$call)
-#   cat("\nCoefficients:\n")
-#   print(mars$coefficients)
-#   cat("HI")
-# }

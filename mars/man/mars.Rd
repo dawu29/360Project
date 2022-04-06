@@ -7,15 +7,17 @@
 mars(formula, data, control = NULL, ...)
 }
 \arguments{
-\item{formula}{a R formula}
-
-\item{data}{a data}
-
-\item{control}{a mars.control object}
+\item{...}{}
 }
 \value{
 
 }
 \description{
 Title
+}
+\examples{
+
+}
+\seealso{
+
 }
