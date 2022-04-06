@@ -38,7 +38,7 @@ mars <- function(formula, data, control=NULL, ...) {
 fwd_stepwise <- function(y,x,control){
   if(control$Mmax<2) {
     warning("Mmax is not greater than or equal to 2")
-    control$Mmax = 2
+    control$Mmax = 2L
   }
 
   # Initialize:
@@ -147,12 +147,13 @@ validate_mars.control <- function (control) {
 
   if(control$Mmax < 2) {
     warning("Mmax is less than 2, changing it to 2")
-    control$Mmax <- 2
+    control$Mmax <- 2L
   }
 
   if(control$Mmax%%2 != 0) {
     warning("Mmax not even, making it even")
     control$Mmax <- 2*ceiling(control$Mmax/2) # make Mmax even
+    control$Mmax <- as.integer(control$Mmax)
   }
 
   return (control)
@@ -172,7 +173,7 @@ validate_mars.control <- function (control) {
 mars.control <- function(Mmax=2, d=3, trace=FALSE) {
   Mmax = as.integer(Mmax)
   x <- list(Mmax=Mmax, d=d, trace=trace)
-  if (Mmax < 2) {Mmax = 2}
+  if (Mmax < 2) {Mmax = 2L}
   x <- validate_mars.control(x)
   new_mars.control(x)
 }

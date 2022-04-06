@@ -1,4 +1,17 @@
-predict.mars <- function(object,newdata) {
+#' Predicted values based on mars object.
+#'
+#' @param object a `mars` object
+#' @param newdata An optional data frame in which to look for variables with which to predict.
+#' If omitted, the fitted values are used.
+#' @param ... further arguments
+#'
+#' @return predicted values of the response variable
+#' @family methods
+#' @export
+#'
+#' @examples mar <- mars(y~x1+x2+x3, data=dataset)
+#'predict(object=mar, newdata=testdata)
+predict.mars <- function(object, newdata, ...) {
   if(missing(newdata) || is.null(newdata)) {
     B <- as.matrix(object$B)
   }
