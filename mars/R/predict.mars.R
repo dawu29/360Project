@@ -9,8 +9,9 @@
 #' @family methods
 #' @export
 #'
-#' @examples mar <- mars(y~x1+x2+x3, data=dataset)
-#'predict(object=mar, newdata=testdata)
+#' @examples mar <- mars(y~x1+x2+x3, data=mars::marstestdata)
+#'predict(object=mar, newdata=mars::marstestdata)
+#' @import stats
 predict.mars <- function(object, newdata, ...) {
   if(missing(newdata) || is.null(newdata)) {
     B <- as.matrix(object$B)
@@ -38,3 +39,5 @@ make_B <- function(X, Bfuncs){
   B <- as.matrix(B)
   return (B)
 }
+
+

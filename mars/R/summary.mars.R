@@ -9,8 +9,9 @@
 #' @family methods
 #' @export
 #'
-#' @examples mar <- mars(y~x1+x2+x3, data=dataset)
+#' @examples mar <- mars(y~x1+x2+x3, data=mars::marstestdata)
 #' summary(mar)
+#' @import stats
 summary.mars <-function (object, ...){
   # Print Call and Residuals information
   five <- fivenum(object$residuals)

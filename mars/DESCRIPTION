@@ -1,9 +1,11 @@
 Package: mars
 Version: 0.0.0.9123
-Title: What the Package Does (One Line, Title Case) ded
-Authors: 
-    Hello am ded, role: de role
-    no
+Title: What the Package Does (One Line, Title Case)
+Authors@R: c(person("Joe", "Developer", role = c("aut", "cre"),
+                     email = "Joe.Developer@some.domain.net"),
+              person("Pat", "Developer", role = "aut"),
+              person("A.", "User", role = "ctb",
+                     email = "A.User@whereever.net"))
 References: hello im a nice guy
 Example: try this please::
 Description: its mars yeyeyeye.
@@ -21,4 +23,4 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)

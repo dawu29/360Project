@@ -21,8 +21,8 @@ predicted values of the response variable
 Predicted values based on mars object.
 }
 \examples{
-mar <- mars(y~x1+x2+x3, data=dataset)
-predict(object=mar, newdata=testdata)
+mar <- mars(y~x1+x2+x3, data=mars::marstestdata)
+predict(object=mar, newdata=mars::marstestdata)
 }
 \seealso{
 Other methods: 
