@@ -14,6 +14,75 @@ knitr::opts_chunk$set(
 )
 ```
 
+
+We will be using the [Wine Quality Data Set](https://archive.ics.uci.edu/ml/datasets/wine+quality) to show the four methods of the mars packages. For demonstration purpose, we will use a subset of the data that is consist of 100 observations. 
+
 ```{r setup}
 library(mars)
+set.seed(123)
+file=system.file("extdata", "winequality-red.csv", package = "mars")
+wine = read.csv(file, sep=";", header=TRUE)
+data = wine[sample(100),]; row.names(data) <- NULL
 ```
+
+To demonstrate the method, first we need to initialize a `mars.control` object with an even `Mmax` value, then fit the mars model.
+
+```{r}
+mc = mars.control(Mmax = 6)
+fit = mars(formula = quality ~., data = data, control = mc)
+```
+
+## print.mars()
+
+```{r}
+print(fit)
+```
+The `print()` method provides the most basic information on the fitted mars model, we can see that the model only has three basis functions, where `B0` is the intercept.
+
+## summary.mars()
+
+If we wanna look into the details of model, we can use the `summary()` method.
+
+```{r}
+summary(fit)
+```
+
+The `summary()` method not only gives us a five number summary on the residuals, but also provides us the coefficients of the hinge functions that constructed the basis functions. We can see that the basis function `B1` is constructed by one hinge functions with variable 1(fixed.acidity), and basis function `B3` is constructed by two hinge functions with variable 2(volatile.acidity) and variable 3(citric.acid). And `t` is the split point.
+
+## plot.mars()
+
+```{r}
+plot(fit)
+```
+
+The `plot()` method prints out the basis functions that are constructed with a single explanatory variable or two explanatory variables which can can helpful as well.
+
+## predict.mars()
+
+The `predict()` methods allow us to make predictions on new explanatory variable dataset using our mars model. For demonstration purpose, we will split the dataset into 75% for training data, 25% for testing data.
+```{r}
+sample_index=sample(seq_len(nrow(data)), size = floor(0.75*nrow(data)))
+train=data[sample_index,]
+test=data[-sample_index,]
+```
+
+Initialize a `mars.control` object with `Mmax=10`, and fit the mars model using the training dataset.
+```{r}
+ma=mars(quality ~., data = train, control=mars.control(Mmax = 6))
+```
+
+Call the `predict()` method get the predicted values using our mars model with the test dataset.
+```{r}
+predicted=predict(ma,test)
+actual=test$quality
+```
+
+Check the mean squared error(MSE) of our predicted value, where $MSE=\frac{1}{n}\sum_{i=1}^{n}(Y_i-\hat{Y_i})^2$. Since the response variable `quality` are ordinal integer values, the predicted values are rounds to the nearest integer.
+
+```{r}
+mean((actual-round(predicted,0))^2) 
+```
+
+The response variable `quality` are values between [3,8]. The MSE is around 0.76, the RMSE is less than 1. We can expect that the predicted values are in general less than 1 grade different from the actual values.
+
+

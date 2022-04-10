@@ -16,7 +16,7 @@ Prints Call, Five-number summary, summary of hinge functions for each basis func
 and the coefficients of each basis function of a \code{mars} object
 }
 \examples{
-mar <- mars(y~x1+x2+x3, data=mars::marstestdata)
+mar <- mars(y~x1+x2+x3, data=mars::marstestdata, control=mars.control(Mmax=6))
 summary(mar)
 }
 \seealso{

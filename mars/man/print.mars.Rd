@@ -15,7 +15,7 @@
 Prints out the call and coefficients of a \code{mars} object
 }
 \examples{
-mar <- mars(y~x1+x2+x3, data=mars::marstestdata)
+mar <- mars(y~x1+x2+x3, data=mars::marstestdata, control=mars.control(Mmax=6))
 print(mar)
 }
 \seealso{
