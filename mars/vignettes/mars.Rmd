@@ -102,6 +102,8 @@ mc = mars.control(Mmax = 6)
 fit = mars(formula = quality ~., data = data, control = mc)
 ```
 
+\
+
 #### print.mars()
 
 ```{r}
@@ -119,6 +121,8 @@ summary(fit)
 ```
 
 The `summary.mars()` method provides two pieces of information: a five number summary on the residuals and the coefficients of the hinge functions that constructed the basis functions. We can see that the basis function `B1` is constructed by one hinge function with variable 2(volatile.acidity), and the basis function `B3` is constructed by two hinge functions with variable 2(volatile.acidity) and variable 3(citric.acid).  `t` is the split point.
+
+\
 
 #### plot.mars()
 
