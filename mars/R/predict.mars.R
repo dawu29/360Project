@@ -1,8 +1,7 @@
 #' Predicted values based on mars object.
 #'
 #' @param object a `mars` object
-#' @param newdata An optional data frame in which to look for variables with which to predict.
-#' If omitted, the fitted values are used.
+#' @param newdata an optional data frame in which to look for variables with which to predict (if omitted, the fitted values are used)
 #' @param ... further arguments
 #'
 #' @return predicted values of the response variable

@@ -14,75 +14,154 @@ knitr::opts_chunk$set(
 )
 ```
 
+### An Introduction to the MARS Package
 
-We will be using the [Wine Quality Data Set](https://archive.ics.uci.edu/ml/datasets/wine+quality) to show the four methods of the mars packages. For demonstration purpose, we will use a subset of the data that is consist of 100 observations. 
+The MARS package (short for Multivariate Adaptive Regression Spline) contains functions to plot, predict, summarize and print the data that users are working with. Functions in MARS help and allow us to work with a model with one response variable y, and multiple predictor variables x1,...,xn.  
+
+\
+
+### Getting Started
+
+Install MARS using
+
+```{r eval=FALSE}
+install_github(repo="https//github.com/SFUStatgen/SFUStat360Projects",
+subdir = "Projects/Project_SSD/mars")
+```
+
+to ensure that all the needed packages are installed.
+
+load the package
+
+```{r}
+library(mars)
+```
+
+\
+
+### The MARS Algorithm
+
+The primary tool in the package is the “mars” function which operates as the following:
+
+* first using the forward stepwise regression procedures, the function is designed to overfit the data
+* the forward stepwise procedure continues until the user is left with sufficiently large model
+* then, backward stepwise regression procedure is applied to the large model
+* with the backward stepwise regression approach, a model is trimmed down nicely to an adequate size with proper number of parameters so users can avoid overfitting the model
+
+### How the Algorithm Works:
+#### MARS - forward stepwise algorithm:
+
+Forward stepwise fits the data nicely by adjusting the coefficient values as well as deriving a proper set of basis functions. Forward stepwise produces basis functions which do not have zero pairwise product expectations. The advantage of this is that basis functions, except for B0, can be removed without leaving a hole in the predictor space.
+
+#### MARS - backward stepwise algorithm:
+
+Jstar(J*) backward stepwise is all of the basis function set and derived from forward stepwise. One basis function is deleted at each iteration of the outer loop, while the inner loop chooses which one to be deleted. The chosen basis function to be deleted is either the one improving the model by its removal or degrading the model the least by the removal. Constant basis function B0(x) = 1 is not considered for elimination. A sequence of (Mmax - 1) models is what is constructed from backward stepwise, and the current sequence has one less basis function than that of the previous sequence. Once the iteration is terminated, the users are left with the best model. 
+
+\
+
+### How to Prepare Inputs and Call mars()
+
+#### Preparing inputs:
+
+There are three inputs for `mars()`, which are `formula`, `data`, and `control`.
+`formula` is a required input that specifies a response variable and explanatory variables. 
+`data` is the data frame containing the data which is also a required input.
+`control` is an optional `mars.control` object. 
+
+```{r}
+# initialize a mars.control object
+mc <- mars.control(Mmax=8)
+```
+
+#### Calling mars()
+
+```{r}
+# fit the model
+test <- mars(formula = y~x1+x2, data = mars::marstestdata, control = mc)
+```
+
+\
+
+### Using MARS Methods
+
+MARS has four methods: `print.mars()`, `summary.mars()`, `plot.mars()`, and `predict.mars()`
+
+“Wine Quality Data Set”(retrieved from https://archive.ics.uci.edu/ml/datasets/wine+quality) is used to present the four methods of the mars package. Out of 1599 total observations, 100 sample observations were selected as a subset so we can better explain the methods in detail. 
+
+Get the “Wine Quality Data Set” ready to use in R.
 
 ```{r setup}
-library(mars)
-set.seed(123)
+rm(list = ls()); library(mars); set.seed(123)
 file=system.file("extdata", "winequality-red.csv", package = "mars")
 wine = read.csv(file, sep=";", header=TRUE)
 data = wine[sample(100),]; row.names(data) <- NULL
 ```
 
-To demonstrate the method, first we need to initialize a `mars.control` object with an even `Mmax` value, then fit the mars model.
+First, we need to initialize a `mars.control` object with an even `Mmax` value, then fit the mars model.
 
 ```{r}
 mc = mars.control(Mmax = 6)
 fit = mars(formula = quality ~., data = data, control = mc)
 ```
 
-## print.mars()
+#### print.mars()
 
 ```{r}
 print(fit)
 ```
-The `print()` method provides the most basic information on the fitted mars model, we can see that the model only has three basis functions, where `B0` is the intercept.
+The `print()` method provides the basic information of the fitted mars model.
+We can see that the model only has three basis functions, where `B0` is the intercept.
 
-## summary.mars()
+#### summary.mars()
 
-If we wanna look into the details of model, we can use the `summary()` method.
+If the users wish to obtain the comprehensive information of the model, it can be obtained from the `summary.mars()` method.
 
 ```{r}
 summary(fit)
 ```
 
-The `summary()` method not only gives us a five number summary on the residuals, but also provides us the coefficients of the hinge functions that constructed the basis functions. We can see that the basis function `B1` is constructed by one hinge functions with variable 1(fixed.acidity), and basis function `B3` is constructed by two hinge functions with variable 2(volatile.acidity) and variable 3(citric.acid). And `t` is the split point.
+The `summary.mars()` method provides two pieces of information: a five number summary on the residuals and the coefficients of the hinge functions that constructed the basis functions. We can see that the basis function `B1` is constructed by one hinge function with variable 2(volatile.acidity), and the basis function `B3` is constructed by two hinge functions with variable 2(volatile.acidity) and variable 3(citric.acid).  `t` is the split point.
 
-## plot.mars()
+#### plot.mars()
 
 ```{r}
 plot(fit)
 ```
 
-The `plot()` method prints out the basis functions that are constructed with a single explanatory variable or two explanatory variables which can can helpful as well.
+The `plot.mars()` method plots the basis functions that are constructed with a single explanatory variable or two explanatory variables which can be helpful as well.
 
-## predict.mars()
+#### predict.mars()
 
-The `predict()` methods allow us to make predictions on new explanatory variable dataset using our mars model. For demonstration purpose, we will split the dataset into 75% for training data, 25% for testing data.
+The `predict.mars()` method allows us to make predictions on a new explanatory variable dataset using our mars model. We will split the dataset into two: 75% of the dataset as training data and the remaining 25% as testing data.
+
 ```{r}
 sample_index=sample(seq_len(nrow(data)), size = floor(0.75*nrow(data)))
 train=data[sample_index,]
 test=data[-sample_index,]
 ```
 
-Initialize a `mars.control` object with `Mmax=10`, and fit the mars model using the training dataset.
+After splitting the dataset, we initialize a `mars.control` object with `Mmax=6`, and fit the mars model using the training dataset.
+
 ```{r}
 ma=mars(quality ~., data = train, control=mars.control(Mmax = 6))
 ```
 
-Call the `predict()` method get the predicted values using our mars model with the test dataset.
+Call the `predict.mars()` method to get the predicted values using our mars model with the test dataset.
+
 ```{r}
 predicted=predict(ma,test)
 actual=test$quality
 ```
 
-Check the mean squared error(MSE) of our predicted value, where $MSE=\frac{1}{n}\sum_{i=1}^{n}(Y_i-\hat{Y_i})^2$. Since the response variable `quality` are ordinal integer values, the predicted values are rounds to the nearest integer.
+Check the mean squared error(MSE) of our predicted value, where $MSE=\frac{1}{n}\sum_{i=1}^{n}(Y_i-\hat{Y_i})^2$. Since the response variable `quality` are ordinal integer values, the predicted values are rounded to the nearest integer.
 
 ```{r}
 mean((actual-round(predicted,0))^2) 
 ```
 
-The response variable `quality` are values between [3,8]. The MSE is around 0.76, the RMSE is less than 1. We can expect that the predicted values are in general less than 1 grade different from the actual values.
+The response variable `quality` has values between [3,8]. The MSE is approximately 0.76 and the RMSE is less than 1. We can expect that the difference between the predicted values and the actual values will be less than 1 in general.
 
+### References
+Jerame H. Friedman. "Multivariate Adaptive Regression Splines."
+Ann, Statist. 19 (1) 1 - 67, March, 1991 <https://doi.org/10.1214/aos/1176347963>
 

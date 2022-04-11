@@ -1,21 +1,21 @@
 Package: mars
-Version: 0.0.0.9123
-Title: What the Package Does (One Line, Title Case)
-Authors@R: c(person("Joe", "Developer", role = c("aut", "cre"),
-                     email = "Joe.Developer@some.domain.net"),
-              person("Pat", "Developer", role = "aut"),
-              person("A.", "User", role = "ctb",
-                     email = "A.User@whereever.net"))
-References: hello im a nice guy
-Example: try this please::
-Description: its mars yeyeyeye.
+Version: 0.0.0.88888888
+Title: Multivariate Adaptive Regression Splines (MARS)
+Author: Siyul Sam Byun, So Yeon Park, Dawu Liu
+Maintainer: Siyul Sam Byun <siyulb@sfu.ca>
+    So Yeon Park <syp7@sfu.ca>
+    Dawu Liu <dla189@sfu.ca>
+Description: Build regression models using the techniques in Friedman's paper "Multivariate Adaptive Regression Splines".
+References: Jerame H. Friedman. "Multivariate Adaptive Regression Splines." Ann, Statist. 19 (1) 1 - 67, March, 1991 \url{https://doi.org/10.1214/aos/1176347963}
+Example: test <- mars(y~x1+x2, data=mars::marstestdata, control=mars.control(Mmax=2))
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
-    stats
+    stats,
+    graphics
 Suggests: 
     knitr,
     rmarkdown,

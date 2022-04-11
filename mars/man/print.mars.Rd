@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.mars.R
 \name{print.mars}
 \alias{print.mars}
-\title{Prints out the call and coefficients of a \code{mars} object}
+\title{Prints out the function call and coefficients of a \code{mars} object}
 \usage{
 \method{print}{mars}(x, ...)
 }
@@ -12,7 +12,7 @@
 \item{...}{further arguments}
 }
 \description{
-Prints out the call and coefficients of a \code{mars} object
+Prints out the function call and coefficients of a \code{mars} object
 }
 \examples{
 mar <- mars(y~x1+x2+x3, data=mars::marstestdata, control=mars.control(Mmax=6))
@@ -20,6 +20,7 @@ print(mar)
 }
 \seealso{
 Other methods: 
+\code{\link{plot.mars}()},
 \code{\link{predict.mars}()},
 \code{\link{summary.mars}()}
 }

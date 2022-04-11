@@ -1,18 +1,35 @@
-#' Title
+#' Multivariate Adaptive Regression Splines (MARS)
 #'
-#' @param formula
-#' @param data
-#' @param control
-#' @param ...
+#' @description MARS (Multivariate Adaptive Regression Splines) is a regression analysis that automatically splits and better linear fit into non-linear models.
 #'
-#' @return
+#' @usage mars(formula, data, control=NULL, ...)
+#'
+#' @param formula an R formula
+#' @param data a data frame containing the data
+#' @param control an object of class 'mars.control'
+#' @param ... further arguments
+#' @details
+#'  MARS - forward stepwise algorithm:
+#'  Forward stepwise fits the data nicely by adjusting the coefficient values as well as deriving a proper set of basis functions. Forward stepwise produces basis functions which do not have zero pairwise product expectations. The advantage of this is that basis functions, except for B0, can be removed without leaving a hole in the predictor space.
+#'
+#'  MARS - backward stepwise algorithm:
+#' Jstar(J*) backward stepwise is all of the basis function set and derived from forward stepwise. One basis function is deleted at each iteration of the outer loop, while the inner loop chooses which one to be deleted. The chosen basis function to be deleted is either the one improving the model by its removal or degrading the model the least by the removal. Constant basis function B0(x) = 1 is not considered for elimination. A sequence of (Mmax - 1) models is what is constructed from backward stepwise, and the current sequence has one less basis function than that of the previous sequence. Once the iteration is terminated, the users are left with the best model.
+#'
+#' @return an S3 object of class mars that includes the final regression model and a description of the basis functions which are constructed by the hinge functions
+#'
+#' @family methods for mars object
 #' @export
+#' @author Siyul Sam Byun, So Yeon Park, Dawu Liu
+#' @references Jerame H. Friedman. "Multivariate Adaptive Regression Splines."
+#' Ann, Statist. 19 (1) 1 - 67, March, 1991 \url{https://doi.org/10.1214/aos/1176347963}
 #'
-#' @seealso
+#' @seealso [plot.mars] for plotting the basis functions of the mars object
+#' @seealso [predict.mars] for making predictions on a new data using the mars object
+#' @seealso [summary.mars] for summarizing the mars object
+#' @seealso [print.mars] for printing the mars object
 #'
-#' @examples
-#'
-#' @imports stats
+#' @examples test <- mars(y~x1+x2, data=mars::marstestdata, control=mars.control(Mmax=2))
+#' @import stats
 #'
 mars <- function(formula, data, control=NULL, ...) {
   cc <- match.call()
@@ -160,16 +177,18 @@ validate_mars.control <- function (control) {
 }
 
 
-#' Title
+#' Constructor for 'mars.control' objects
 #'
-#' @param Mmax
-#' @param d
-#' @param trace
+#' This function constructs a 'mars.control' object that specifies parameters used in the model fitting procedure.
 #'
-#' @return
+#' @param Mmax A maximum even integer of basis functions. Default value is 2.
+#' @param d A smoothing parameter for the generalized cross-validation. Default value is 3.
+#' @param trace A logical value
+#'
+#' @return a `mars.control` object
 #' @export
 #'
-#' @examples
+#' @examples test <- mars.control(Mmax = 10)
 mars.control <- function(Mmax=2, d=3, trace=FALSE) {
   Mmax = as.integer(Mmax)
   x <- list(Mmax=Mmax, d=d, trace=trace)

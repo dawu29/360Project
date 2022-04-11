@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.mars.R
 \name{plot.mars}
 \alias{plot.mars}
-\title{Plot a mars object}
+\title{Plots a mars object}
 \usage{
 \method{plot}{mars}(x, ...)
 }
@@ -12,10 +12,17 @@
 \item{...}{further arguments}
 }
 \description{
-Plot basis functions that are constructed with a single explanatory variable
+Plots basis functions that are constructed with a single explanatory variable
 or two explanatory variables
 }
 \examples{
 mar <- mars(y~x1+x2+x3, data=mars::marstestdata, control=mars.control(Mmax=6))
 plot(x=mar)
 }
+\seealso{
+Other methods: 
+\code{\link{predict.mars}()},
+\code{\link{print.mars}()},
+\code{\link{summary.mars}()}
+}
+\concept{methods}

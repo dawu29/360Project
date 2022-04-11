@@ -1,11 +1,11 @@
-#' Plot a mars object
+#' Plots a mars object
 #'
-#' Plot basis functions that are constructed with a single explanatory variable
+#' Plots basis functions that are constructed with a single explanatory variable
 #' or two explanatory variables
 #'
 #' @param x a mars object
 #' @param ... further arguments
-#'
+#' @family methods
 #' @export
 #'
 #' @examples mar <- mars(y~x1+x2+x3, data=mars::marstestdata, control=mars.control(Mmax=6))

@@ -1,4 +1,4 @@
-#' Prints out the call and coefficients of a `mars` object
+#' Prints out the function call and coefficients of a `mars` object
 #'
 #' @param x a `mars` object
 #' @param ... further arguments

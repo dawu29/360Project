@@ -1,6 +1,6 @@
-#' Produce result summaries of a mars object
+#' Summary method for class "mars".
 #'
-#' Prints Call, Five-number summary, summary of hinge functions for each basis function,
+#' Prints function call, five-number summary, summary of hinge functions for each basis function,
 #' and the coefficients of each basis function of a `mars` object
 #'
 #' @param object a `mars` object for which a summary is desired.

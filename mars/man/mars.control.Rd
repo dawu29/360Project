@@ -2,16 +2,23 @@
 % Please edit documentation in R/mars.R
 \name{mars.control}
 \alias{mars.control}
-\title{Title}
+\title{Constructor for 'mars.control' objects}
 \usage{
 mars.control(Mmax = 2, d = 3, trace = FALSE)
 }
 \arguments{
-\item{trace}{}
+\item{Mmax}{A maximum even integer of basis functions. Default value is 2.}
+
+\item{d}{A smoothing parameter for the generalized cross-validation. Default value is 3.}
+
+\item{trace}{A logical value}
 }
 \value{
-
+a \code{mars.control} object
 }
 \description{
-Title
+This function constructs a 'mars.control' object that specifies parameters used in the model fitting procedure.
+}
+\examples{
+test <- mars.control(Mmax = 10)
 }

@@ -9,8 +9,7 @@
 \arguments{
 \item{object}{a \code{mars} object}
 
-\item{newdata}{An optional data frame in which to look for variables with which to predict.
-If omitted, the fitted values are used.}
+\item{newdata}{an optional data frame in which to look for variables with which to predict (if omitted, the fitted values are used)}
 
 \item{...}{further arguments}
 }
@@ -26,6 +25,7 @@ predict(object=mar, newdata=mars::marstestdata)
 }
 \seealso{
 Other methods: 
+\code{\link{plot.mars}()},
 \code{\link{print.mars}()},
 \code{\link{summary.mars}()}
 }

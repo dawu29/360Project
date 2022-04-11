@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.mars.R
 \name{summary.mars}
 \alias{summary.mars}
-\title{Produce result summaries of a mars object}
+\title{Summary method for class "mars".}
 \usage{
 \method{summary}{mars}(object, ...)
 }
@@ -12,7 +12,7 @@
 \item{...}{further arguments}
 }
 \description{
-Prints Call, Five-number summary, summary of hinge functions for each basis function,
+Prints function call, five-number summary, summary of hinge functions for each basis function,
 and the coefficients of each basis function of a \code{mars} object
 }
 \examples{
@@ -21,6 +21,7 @@ summary(mar)
 }
 \seealso{
 Other methods: 
+\code{\link{plot.mars}()},
 \code{\link{predict.mars}()},
 \code{\link{print.mars}()}
 }
