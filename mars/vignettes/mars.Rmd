@@ -25,8 +25,8 @@ The MARS package (short for Multivariate Adaptive Regression Spline) contains fu
 Install MARS using
 
 ```{r eval=FALSE}
-install_github(repo="https//github.com/SFUStatgen/SFUStat360Projects",
-subdir = "Projects/Project_SSD/mars")
+install_github(repo="https://github.com/SFUStatgen/SFUStat360Projects/", 
+               subdir = "Projects/Project_SSD/mars")
 ```
 
 to ensure that all the needed packages are installed.
