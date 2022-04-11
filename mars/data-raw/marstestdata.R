@@ -10,7 +10,7 @@ error.SD <- 0.1
 # Simulate x's
 x <- matrix(rnorm(N*n),ncol=n)
 # Simulate response variable
-h <- function(x,s,t) {
+h <- function(s,x,t) {
   return(pmax(0,s*(x-t)))
 }
 lin.pred <- beta1*h(x[,1],+1,knot1) + beta2*h(x[,2],-1,knot2)*h(x[,1],+1,knot3)
