@@ -41,10 +41,10 @@ library(mars)
 
 The primary tool in the package is the “mars” function which operates as the following:
 
-* first using the forward stepwise regression procedures, the function is designed to overfit the data
-* the forward stepwise procedure continues until the user is left with sufficiently large model
-* then, backward stepwise regression procedure is applied to the large model
-* with the backward stepwise regression approach, a model is trimmed down nicely to an adequate size with proper number of parameters so users can avoid overfitting the model
+* First using the forward stepwise regression procedures, the function is designed to overfit the data
+* The forward stepwise procedure continues until the user is left with sufficiently large model
+* Then, backward stepwise regression procedure is applied to the large model
+* With the backward stepwise regression approach, a model is trimmed down nicely to an adequate size with proper number of parameters so users can avoid overfitting the model
 
 ### How the Algorithm Works:
 #### MARS - forward stepwise algorithm:
@@ -53,7 +53,7 @@ Forward stepwise fits the data nicely by adjusting the coefficient values as wel
 
 #### MARS - backward stepwise algorithm:
 
-Jstar(J*) backward stepwise is all of the basis function set and derived from forward stepwise. One basis function is deleted at each iteration of the outer loop, while the inner loop chooses which one to be deleted. The chosen basis function to be deleted is either the one improving the model by its removal or degrading the model the least by the removal. Constant basis function B0(x) = 1 is not considered for elimination. A sequence of (Mmax - 1) models is what is constructed from backward stepwise, and the current sequence has one less basis function than that of the previous sequence. Once the iteration is terminated, the users are left with the best model. 
+Jstar(J*) in backward stepwise algorithm is all of the basis function set and derived from forward stepwise algorithm. One basis function is deleted at each iteration of the outer loop, while the inner loop chooses which one to be deleted. The chosen basis function to be deleted is either the one improving the model by its removal or degrading the model the least by the removal. Constant basis function B0(x) = 1 is not considered for elimination. A sequence of (Mmax - 1) models is what is constructed from backward stepwise, and the current sequence has one less basis function than that of the previous sequence. Once the iteration is terminated, the users are left with the best model. 
 
 \
 
